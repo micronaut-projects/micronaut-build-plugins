@@ -1,0 +1,46 @@
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    project.ext.configureMavenRelease = {
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    pom {
+                        url = 'https://github.com/micronaut-projects/micronaut-build-plugins'
+                        inceptionYear = '2020'
+
+                        licenses {
+                            license {
+                                name = 'The Apache License, Version 2.0'
+                                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                                distribution = 'repo'
+                            }
+                        }
+                        developers {
+                            developer {
+                                id = 'alvarosanchez'
+                                name = 'Álvaro Sánchez-Mariscal'
+                                url = 'https://github.com/alvarosanchez'
+                            }
+                            developer {
+                                id = 'graemerocher'
+                                name = 'Graeme Rocher'
+                                url = 'https://github.com/graemerocher'
+                            }
+                        }
+                        scm {
+                            url = 'https://github.com/micronaut-projects/micronaut-build-plugins'
+                            connection = 'scm:https://github.com/micronaut-projects/micronaut-build-plugins.git'
+                            developerConnection = 'scm:git://github.com/micronaut-projects/micronaut-build-plugins.git'
+                        }
+                        organization {
+                            name = 'Micronaut'
+                            url = 'https://micronaut.io/'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

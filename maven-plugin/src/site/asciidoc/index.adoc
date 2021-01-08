@@ -1,0 +1,63 @@
+{site-description}.
+
+This plugin has the following features:
+
+1. link:examples/run.html[Running in development mode].
+2. link:examples/package.html[Packaging] an application into different formats: fat JAR, native image, Docker, etc.
+3. link:dockerfile-mojo.html[Generating `Dockerfile`]s.
+4. link:examples/deploy.html[Deploying] Docker images to different registries.
+
+=== Usage
+
+Add the plugin to your `build/plugins` section:
+
+[source,xml,subs="verbatim,attributes"]
+----
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!-- ... -->
+    <packaging>${packaging}</packaging>
+
+    <properties>
+        <!-- ... -->
+        <packaging>jar</packaging>
+        <micronaut.runtime>netty</micronaut.runtime>
+    </properties>
+
+    <build>
+        <plugins>
+            <!-- ... -->
+
+            <plugin>
+                <groupId>io.micronaut.build</groupId>
+                <artifactId>micronaut-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+----
+
+The `<packaging>` part is important since the plugin support several packaging types. The default is `jar`.
+
+For snapshot versions, you need the Sonatype OSSRH Snapshot repository:
+
+[source,xml]
+----
+<project>
+
+    <!-- ... -->
+
+    <pluginRepositories>
+
+        <!-- ... -->
+
+        <pluginRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+</project>
+----

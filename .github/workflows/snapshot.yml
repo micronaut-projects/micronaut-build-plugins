@@ -1,0 +1,56 @@
+name: Snapshot
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Java and Maven and set up Apache Maven Central
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+          server-password: GH_TOKEN
+
+      - name: Cache Maven packages
+        uses: actions/cache@v2.1.3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Run tests
+        run: mvn verify -Prun-its
+
+      - name: Determine current version
+        id: release_version
+        run: echo ::set-output name=release_version::`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`
+
+      - name: Generate site
+        if: success() && github.event_name == 'push'
+        run: mvn site:site
+
+      - name: Publish to Github Pages
+        if: success() && github.event_name == 'push'
+        uses: micronaut-projects/github-pages-deploy-action@master
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          BASE_BRANCH: master
+          BRANCH: gh-pages
+          FOLDER: target/site
+
+      - name: Deploy snapshot
+        if: success() && github.event_name == 'push' && endsWith(steps.release_version.outputs.release_version, 'SNAPSHOT')
+        uses: samuelmeuli/action-maven-publish@v1
+        with:
+          nexus_username: ${{ secrets.SONATYPE_USERNAME }}
+          nexus_password: ${{ secrets.SONATYPE_PASSWORD }}
