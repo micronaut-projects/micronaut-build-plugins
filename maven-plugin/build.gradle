@@ -1,6 +1,6 @@
 plugins {
     id 'io.freefair.maven-plugin' version '5.3.0'
-    id "com.github.dkorotych.gradle-maven-exec" version "2.2.1"
+//    id "com.github.dkorotych.gradle-maven-exec" version "2.2.1"
 }
 
 repositories {
@@ -55,11 +55,11 @@ publishing {
     }
 }
 
-task mvnCleanInstall(type: MavenExec) {
-    goals 'clean', 'install'
-}
-
-publish.dependsOn mvnCleanInstall
+//task mvnCleanInstall(type: MavenExec) {
+//    goals 'clean', 'install'
+//}
+//
+//publish.dependsOn mvnCleanInstall
 
 generateMavenPluginDescriptor {
     goalPrefix = "mn"

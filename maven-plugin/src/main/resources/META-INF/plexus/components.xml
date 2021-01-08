@@ -94,11 +94,11 @@
                                 org.apache.maven.plugins:maven-compiler-plugin:compile
                             </compile>
                             <package>
-                                ${project.groupId}:${project.artifactId}:${project.version}:docker,
+                                io.micronaut.build:micronaut-maven-plugin:docker,
                                 com.google.cloud.tools:jib-maven-plugin:dockerBuild
                             </package>
                             <deploy>
-                                ${project.groupId}:${project.artifactId}:${project.version}:docker-push
+                                io.micronaut.build:micronaut-maven-plugin:docker-push
                             </deploy>
                         </phases>
                     </lifecycle>
@@ -125,10 +125,10 @@
                                 org.apache.maven.plugins:maven-compiler-plugin:compile
                             </compile>
                             <package>
-                                ${project.groupId}:${project.artifactId}:${project.version}:docker-native
+                                io.micronaut.build:micronaut-maven-plugin:docker-native
                             </package>
                             <deploy>
-                                ${project.groupId}:${project.artifactId}:${project.version}:docker-push
+                                io.micronaut.build:micronaut-maven-plugin:docker-push
                             </deploy>
                         </phases>
                     </lifecycle>
