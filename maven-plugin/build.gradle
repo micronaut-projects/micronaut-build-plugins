@@ -1,6 +1,9 @@
+import java.text.SimpleDateFormat
+
 plugins {
+    id 'java-library'
     id 'io.freefair.maven-plugin' version '5.3.0'
-//    id "com.github.dkorotych.gradle-maven-exec" version "2.2.1"
+    id "com.github.dkorotych.gradle-maven-exec" version "2.2.1"
 }
 
 repositories {
@@ -11,55 +14,129 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.apache.maven:maven-plugin-api:3.3.9'
-    implementation 'org.twdata.maven:mojo-executor:2.3.1'
-    implementation 'org.apache.maven.resolver:maven-resolver-util:1.6.1'
-    implementation 'io.methvin:directory-watcher:0.12.0'
-    implementation 'com.google.cloud.tools:jib-maven-plugin-extension-api:0.4.0'
-    implementation 'com.google.cloud.tools:jib-native-image-extension-maven:0.1.0'
-    implementation 'com.google.cloud.tools:jib-core:0.16.0'
-    implementation 'com.github.docker-java:docker-java-core:3.2.7'
-    implementation 'com.github.docker-java:docker-java-transport-zerodep:3.2.7'
-    implementation 'org.testcontainers:testcontainers:1.15.1'
-    implementation 'org.graalvm.nativeimage:native-image-maven-plugin:20.3.0'
-    implementation 'org.apache.commons:commons-compress:1.20'
-    implementation 'io.micronaut:micronaut-inject:2.2.3'
-    implementation 'org.yaml:snakeyaml:1.27'
-    testImplementation 'org.apache.maven:maven-compat:3.3.9'
+    api "org.apache.maven:maven-plugin-api:${mavenVersion}"
+    api 'org.twdata.maven:mojo-executor:2.3.1'
+    api 'org.apache.maven.resolver:maven-resolver-util:1.6.1'
+    api 'io.methvin:directory-watcher:0.12.0'
+    api 'com.google.cloud.tools:jib-maven-plugin-extension-api:0.4.0'
+    api 'com.google.cloud.tools:jib-native-image-extension-maven:0.1.0'
+    api 'com.google.cloud.tools:jib-core:0.16.0'
+    api 'com.github.docker-java:docker-java-core:3.2.7'
+    api 'com.github.docker-java:docker-java-transport-zerodep:3.2.7'
+    api 'org.testcontainers:testcontainers:1.15.1'
+    api "org.graalvm.nativeimage:native-image-maven-plugin:${nativeImagePluginVersion}"
+    api 'org.apache.commons:commons-compress:1.20'
+    api "io.micronaut:micronaut-inject:${micronautVersion}"
+    api 'org.yaml:snakeyaml:1.27'
+
+    testImplementation "org.apache.maven:maven-compat:${mavenVersion}"
     testImplementation 'junit:junit:4.13.1'
     testImplementation 'org.apache.maven.plugin-testing:maven-plugin-testing-harness:3.3.0'
-    compileOnly 'org.apache.maven:maven-core:3.3.9'
-    compileOnly 'org.apache.maven:maven-artifact:3.3.9'
+
+    compileOnly "org.apache.maven:maven-core:${mavenVersion}"
+    compileOnly "org.apache.maven:maven-artifact:${mavenVersion}"
     compileOnly 'org.apache.maven.shared:maven-shared-utils:3.3.3'
     compileOnly 'org.apache.maven.plugin-tools:maven-plugin-annotations:3.6.0'
     compileOnly 'com.google.cloud.tools:jib-maven-plugin:2.7.1'
 }
 
 group = 'io.micronaut.build'
-version = '1.1.4-GRADLE-SNAPSHOT'
+version = projectVersion
 description = 'Maven plugin to execute and package Micronaut applications'
 java.sourceCompatibility = JavaVersion.VERSION_1_8
-
-configureMavenRelease()
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             artifactId = 'micronaut-maven-plugin'
-            pom {
-                name = "Micronaut Maven Plugin"
-                description = project.description
+            pom { org.gradle.api.publish.maven.MavenPom mavenPom ->
+                mavenPom.url = 'https://github.com/micronaut-projects/micronaut-build-plugins'
+                mavenPom.inceptionYear = '2020'
 
+                mavenPom.licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution = 'repo'
+                    }
+                }
+                mavenPom.developers {
+                    developer {
+                        id = 'alvarosanchez'
+                        name = 'Álvaro Sánchez-Mariscal'
+                        url = 'https://github.com/alvarosanchez'
+                    }
+                }
+                mavenPom.scm {
+                    url = 'https://github.com/micronaut-projects/micronaut-build-plugins'
+                    connection = 'scm:https://github.com/micronaut-projects/micronaut-build-plugins.git'
+                    developerConnection = 'scm:git://github.com/micronaut-projects/micronaut-build-plugins.git'
+                }
+                mavenPom.organization {
+                    name = 'Micronaut'
+                    url = 'https://micronaut.io/'
+                }
+
+                mavenPom.name = "Micronaut Maven Plugin"
+                mavenPom.description = project.description
+                mavenPom.issueManagement {
+                    it.system = 'GitHub'
+                    it.url = 'https://github.com/micronaut-projects/micronaut-maven-plugin/issues'
+                }
+                mavenPom.ciManagement {
+                    it.system = 'GitHub'
+                    it.url = 'https://github.com/micronaut-projects/micronaut-maven-plugin/actions'
+                }
+                mavenPom.properties = [
+                        'project.build.sourceEncoding': 'UTF-8',
+                        'maven.compiler.source': JavaVersion.VERSION_1_8.toString(),
+                        'maven.compiler.target': JavaVersion.VERSION_1_8.toString(),
+                        'maven.version': mavenVersion,
+                        'site.path': '${project.artifactId}',
+                        'site.name': '${project.name}',
+                        'site.description': '${project.description}',
+                        'site.version': '${project.version}',
+                        'project.build.outputTimestamp': new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(new Date()),
+                        'native-image-plugin.version': nativeImagePluginVersion,
+                        'micronaut.version': micronautVersion
+                ]
+                mavenPom.withXml { XmlProvider xml ->
+                    xml.asNode().appendNode("prerequisites").appendNode("maven", '${maven.version}')
+                    project.configurations.compileOnly.allDependencies.each { dependency ->
+                        xml.asNode().dependencies[0].appendNode("dependency").with {
+                            it.appendNode("groupId", dependency.group)
+                            it.appendNode("artifactId", dependency.name)
+                            it.appendNode("version", dependency.version)
+                            it.appendNode("scope", "provided")
+                        }
+                    }
+                    project.configurations.testImplementation.dependencies.each { dependency ->
+                        xml.asNode().dependencies[0].appendNode("dependency").with {
+                            it.appendNode("groupId", dependency.group)
+                            it.appendNode("artifactId", dependency.name)
+                            it.appendNode("version", dependency.version)
+                            it.appendNode("scope", "test")
+                        }
+                    }
+                    xml.asNode().append(new XmlParser().parse(file('maven-pom-build.xml')))
+                    xml.asNode().append(new XmlParser().parse(file('maven-pom-reporting.xml')))
+                    xml.asNode().append(new XmlParser().parse(file('maven-pom-profiles.xml')))
+                }
             }
         }
     }
 }
 
-//task mvnCleanInstall(type: MavenExec) {
-//    goals 'clean', 'install'
-//}
-//
-//publish.dependsOn mvnCleanInstall
+task runIts(type: MavenExec, dependsOn: generatePomFileForMavenJavaPublication) {
+    goals 'verify'
+    workingDir projectDir
+    options {
+        file = generatePomFileForMavenJavaPublication.outputs.files.first()
+        activateProfiles = ['run-its']
+    }
+}
+
+check.dependsOn runIts
 
 generateMavenPluginDescriptor {
     goalPrefix = "mn"
