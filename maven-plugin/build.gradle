@@ -128,10 +128,17 @@ publishing {
 }
 
 task runIts(type: MavenExec, dependsOn: generatePomFileForMavenJavaPublication) {
+    def pomFile = generatePomFileForMavenJavaPublication.outputs.files.first()
+    doFirst {
+        copy {
+            from "src"
+            into "${pomFile.parent}/src"
+        }
+    }
     goals 'verify'
     workingDir projectDir
     options {
-        file = generatePomFileForMavenJavaPublication.outputs.files.first()
+        file = pomFile
         activateProfiles = ['run-its']
     }
 }
