@@ -9,4 +9,5 @@
 
 rootProject.name = 'micronaut-build-plugins'
 
+include "gradle-plugin"
 include "maven-plugin"
